@@ -10,4 +10,4 @@ A shell script that calculates mean and medians of numbers that can be input to 
 
 ### Adventure
 
-A game written in C! One of the programs generates a bunch of room files and containing information possible connections to other rooms. The other program enables a player to navigate via the information in the files and try to find the "END" room. Super fun! :)
+A game written in C! One of the programs generates a bunch of room files containing information about possible connections to other rooms. The other program enables a player to navigate via the information in the files and try to find the "END" room. Super fun! :)
