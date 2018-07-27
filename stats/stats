@@ -1,0 +1,150 @@
+#!/bin/bash 
+# STATS
+# By:	Romano Garza
+# Date:	10/04/2017
+# Description:	Calculates mean and median of rows or columns
+
+TMP="tmp$$"
+AVGs="tmp1$$"
+MEDs="tmp2$$"
+trap "rm -f $TMP $AVGs $MEDs ; exit 1" INT HUP TERM
+
+#check if correct number of args passed
+if [ "$#" -eq "0" ] || [ "$#" -gt "2" ]; then
+  echo "$0 {-rows|-cols} [file]" 1>&2
+  exit 1
+fi
+
+#check if file passed
+if [ "$#" = "1" ]
+then
+  cat > "$TMP"
+elif [ "$#" -eq "2" ]
+then 
+  #check that passed file exists and is readable
+  if [ ! -f "$2" ] || [ ! -r "$2" ]; then 
+    echo "$0: cannot read $2" 1>&2
+    exit 1
+  else
+    TMP=$2
+  fi
+fi
+
+#check if row parameter was passed
+if [[ $1 == -r* ]] 
+then 
+  echo -e "Average\t\tMedian"
+  #prep to calc average and median
+  while read line
+  do
+    #check that line is not empty
+    if [ ! -z "$line" ]; then 
+      sum=0
+      count=0
+      #sort the line
+      lineSorted=$(echo "$line" | tr '\t' '\n' | sort -n )
+ 
+      #sum each number and collect line count
+      for i in $lineSorted
+      do
+        sum=$(expr $sum + $i)
+        count=$(expr $count + 1)
+      done
+      
+      #calculate average properly rounded
+      bDiv2=$(expr $count / 2)
+      topSum=$(expr $bDiv2 + $sum)
+      average=$(expr $topSum / $count )
+      
+     
+      #find the median
+      midpoint=$(expr $count / 2 + 1)
+      count2=0
+      median=0
+      for i in $lineSorted
+      do
+        count2=$(expr $count2 + 1)
+        if [ "$count2" -eq "$midpoint" ]; then 
+          median=$i
+        fi
+      done
+      
+      #display data
+      echo -e "$average\t\t$median"
+    fi
+  done < $TMP
+elif [[ $1 == -c* ]]
+then 
+  #get number of columns
+  columnCount=$(head -n 1 $TMP | wc -w)
+  averages=""
+  for i in `seq 1 $columnCount` 
+  do
+    #cut out the column and sort it
+    sortedColumn=$(cut -f $i $TMP | sort -n)
+    sum=0
+    count=0
+    for j in $sortedColumn
+    do
+      sum=$(expr $sum + $j)
+      count=$(expr $count + 1)
+    done
+      
+    #calculate average properly rounded
+    bDiv2=$(expr $count / 2)
+    topSum=$(expr $bDiv2 + $sum)
+    average=$(expr $topSum / $count )
+      
+     
+    #find the median
+    midpoint=$(expr $count / 2 + 1)
+    count2=0
+    median=0
+    for h in $sortedColumn
+    do
+      count2=$(expr $count2 + 1)
+      if [ "$count2" -eq "$midpoint" ]; then 
+        median=$h
+      fi
+    done
+      
+    #save to appropriate file
+    echo -ne "$average\t" | cat >> $AVGs
+    echo -ne "$median\t" | cat >> $MEDs  
+    
+  done < $TMP
+
+  #display data
+  echo -e "Average"
+  cat $AVGs
+  echo ""
+  echo -e "Median"
+  cat $MEDs
+  echo ""
+else
+  echo "$0 {-rows|-cols} [file]" 1>&2
+  exit 1
+  
+fi    
+    
+
+rm -f "tmp$$" 
+rm -f $AVGs
+rm -f $MEDs
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
