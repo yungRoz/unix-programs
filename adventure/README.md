@@ -1,6 +1,6 @@
 # Adventure
 
-These are a couple C programs I wrote to demonstrate familiarity with C programming on UNIX and common file read and write operations.
+These are a couple C programs I wrote to demonstrate familiarity with C programming on UNIX, common file read and write operations, and multithreading.
 
 ## Overview
 
